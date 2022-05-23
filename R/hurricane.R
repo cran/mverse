@@ -1,0 +1,59 @@
+#' Data on Atlantic hurricanes in the U.S. between 1950 and 2012.
+#'
+#' A dataset for the study conducted by Jung et al. (2014) in
+#' \doi{10.1073/pnas.1402786111}{Female hurricanes are
+#' deadlier than male hurricanes}.
+#'
+#' @format A data frame with 94 rows and 12 variables:
+#' \describe{
+#'   \item{Year}{Year in which the hurricane landed on U.S.}
+#'   \item{Name}{Name of the hurricane.}
+#'   \item{MasFem}{Femininity index of the hurricane name collected
+#'   by Jung et al. (1 - very masculine; 11 - very feminine).}
+#'   \item{MinPressure_before}{Minimum pressure of the hurricane
+#'   at the time of landfall in the U.S. (original).}
+#'   \item{Minpressure_Updated_2014}{Minimum pressure of the hurricane
+#'   at the time of landfall in the U.S. (updated).}
+#'   \item{Gender_MF}{Gender indicator for the hurricane name based
+#'   on \code{MasFem} index (1 - \code{MasFem} > 6; 0 otherwise).}
+#'   \item{Category}{Hurricane category on a scale of 1 to 5,
+#'   with 5 being the most severe.}
+#'   \item{alldeaths}{Number of fatalities.}
+#'   \item{NDAM}{Normalized damage in 2013 U.S. million dollars.}
+#'   \item{Elapsed.Yrs}{Time since hurricane.}
+#'   \item{Source}{Source from where the data was gathered.}
+#'   \item{HighestWindSpeed}{Maximum wind speed.}
+#'   \item{MasFem_MTUrk}{Femininity index of the hurricane name collected
+#'   by Simonsohn et al.}
+#'   \item{NDAM15}{Normalized damage in 2015 U.S. million dollars.}
+#' }
+#' @details
+#' The dataset was collected by Jung et al. in their study
+#' \emph{Female hurricanes are deadlier than male hurricanes}.
+#' Their study didn't include hurricanes Katrina and Audrey which were
+#' deemed as outliers. Simonsohn et al. collected the extra data for
+#' \doi{10.1038/s41562-020-0912-z}{Specification curve analysis}
+#' including an additional femininity index based on an MTUrk survey
+#' and updated normalized damage amount in 2015 U.S. dollars.
+#'
+#' This dataset includes data prepared by Jung et al. (2014) as well as those
+#' prepared by Simonsohn et al. (2020). Specifically, all data on Katrina and
+#' Audrey are from Simonsohn et al. (2020) except minimum pressure updated
+#' in 2014. They were retrieved from
+#' \href{https://www.aoml.noaa.gov/hrd/hurdat/All_U.S._Hurricanes.html}{
+#' Continental United States Hurricane Impacts/Landfalls 1851-2021} table
+#' maintained by U.S. National Oceanic and Atmospheric Administration.
+#' Maximum wind speed, femininity index from MTUrk survey, and
+#' 2015 damage amounts are also from Simonsohn et al. (2020).
+#'
+#' @source
+#' Kiju Jung, Sharon Shavitt, Madhu Viswanathan, and Joseph M. Hilbe.
+#' (2014). "Female hurricanes are deadlier than male hurricanes."
+#' \emph{Proceedings of the National Academy of Sciences}, 111(24), 8782-8787.
+#' \doi{10.1073/pnas.1402786111}
+#' @source
+#' Uri Simonsohn, Joseph P. Simmons, and Leif D. Nelson. (2020).
+#' “Specification curve analysis” \emph{Nature Human Behaviour},
+#' 4, 1208–14. \doi{10.1038/s41562-020-0912-z}
+#'
+"hurricane"
