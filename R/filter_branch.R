@@ -12,33 +12,16 @@
 #' mv <- create_multiverse(hurricane) %>%
 #'   add_filter_branch(hurricane_outliers)
 #' @param ... branch definition expressions.
-#' @param name Name for the new filter.
+#' @param name (optional) Name for the new filter.
 #' @return a filter_branch object.
 #' @name filter_branch
 #' @family filter branch functions
 #' @export
 filter_branch <- function(..., name = NULL) {
   opts <- rlang::enquos(...)
-  if (!length(opts) > 0) {
-    stop("Error: Provide at least one rule.")
-  }
-  if (!(is.character(name) | is.null(name))) {
-    stop('Error: "name" must be a character object.')
-  }
-  structure(
-    list(
-      opts = opts,
-      name = name
-    ),
-    class = c("filter_branch", "branch")
-  )
+  branch(opts, name, "filter_branch")
 }
 
-#' @rdname add_filter_branch
-#' @export
-add_filter_branch <- function(.mverse, ...) {
-  UseMethod("add_filter_branch")
-}
 
 #' Add filter branches to a \code{mverse} object.
 #'
@@ -62,12 +45,25 @@ add_filter_branch <- function(.mverse, ...) {
 #'   add_filter_branch(hurricane_outliers)
 #' @return The resulting \code{mverse} object.
 #' @name add_filter_branch
+#' @rdname add_filter_branch
 #' @family filter branch functions
 #' @export
-add_filter_branch.mverse <- function(.mverse, ...) {
+add_filter_branch <- function(.mverse, ...) {
   nms <- sapply(rlang::enquos(...), rlang::quo_name)
   brs <- list(...)
   stopifnot(all(sapply(brs, inherits, "filter_branch")))
   .mverse <- add_branch(.mverse, brs, nms)
   invisible(.mverse)
 }
+
+code_branch_filter_branch <- function(.mverse, br) {
+  multiverse::inside(
+    .mverse,
+    .data_mverse <- dplyr::filter(.data_mverse, !!parse(br))
+  )
+  invisible()
+}
+methods::setOldClass("filter_branch")
+methods::setMethod("code_branch",
+                   signature = signature(br = "filter_branch"),
+                   code_branch_filter_branch)

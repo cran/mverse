@@ -38,8 +38,9 @@ a multiverse table as a tibble.
 \description{
 This method returns the multiverse table
 displaying all universes defined by the multiverse.
-Each row corresponds to a universe and each column
-represents a branch.
+Each row corresponds to a universe and the columns
+include universe number, branch option name, and
+branch option definition.
 }
 \details{
 When you pass a \code{mverse} objected fitted with model,
@@ -62,7 +63,6 @@ summary(mv)
 hurricane_outliers <- filter_branch(
   !Name \%in\% c("Katrina", "Audrey", "Andrew"),
   !Name \%in\% c("Katrina"),
-  !Name \%in\% c("Katrina"),
   TRUE # include all
 )
 mv <- add_filter_branch(mv, hurricane_outliers)
@@ -84,8 +84,8 @@ hurricane_outliers <- filter_branch(
   TRUE # include all
 )
 model_specifications <- formula_branch(
-  y ~ femininity,
-  y ~ femininity + hurricane_strength
+  y ~ MasFem,
+  y ~ MasFem + hurricane_strength
 )
 mv <- create_multiverse(hurricane) \%>\%
   add_filter_branch(hurricane_outliers) \%>\%
@@ -107,8 +107,8 @@ hurricane_outliers <- filter_branch(
   TRUE # include all
 )
 model_specifications <- formula_branch(
-  alldeaths ~ femininity,
-  alldeaths ~ femininity + hurricane_strength
+  alldeaths ~ MasFem,
+  alldeaths ~ MasFem + hurricane_strength
 )
 model_distributions <- family_branch(poisson)
 mv <- create_multiverse(hurricane) \%>\%
@@ -120,24 +120,14 @@ mv <- create_multiverse(hurricane) \%>\%
 summary(mv)
 }
 \donttest{
-
 # Displaying the multiverse table with \code{glm.nb} models fitted.
-hurricane_strength <- mutate_branch(
-  NDAM,
-  HighestWindSpeed,
-  Minpressure_Updated_2014
-)
 hurricane_outliers <- filter_branch(
   !Name \%in\% c("Katrina", "Audrey", "Andrew"),
   TRUE # include all
 )
-model_specifications <- formula_branch(
-  alldeaths ~ femininity,
-  alldeaths ~ femininity + hurricane_strength
-)
+model_specifications <- formula_branch(alldeaths ~ MasFem)
 mv <- create_multiverse(hurricane) \%>\%
   add_filter_branch(hurricane_outliers) \%>\%
-  add_mutate_branch(hurricane_strength) \%>\%
   add_formula_branch(model_specifications) \%>\%
   glm.nb_mverse()
 summary(mv)

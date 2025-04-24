@@ -1,12 +1,13 @@
-context("Branch Conditioning")
-
 mydf <- data.frame(x = c(1, 2, 3), y = c(4, 5, 6))
 
-test_that("branch_condition() stores x and y options without evaluating the expressions.", {
-  cond <- branch_condition(log(x + 1), y)
-  expect_equal(cond$x, "log(x + 1)")
-  expect_equal(cond$y, "y")
-})
+test_that(
+  "branch_condition() stores x and y options
+  without evaluating the expressions.", {
+    cond <- branch_condition(log(x + 1), y)
+    expect_equal(cond$x, "log(x + 1)")
+    expect_equal(cond$y, "y")
+  }
+)
 
 test_that("branch_condition() expects expressions not strings.", {
   expect_error(
@@ -61,5 +62,17 @@ test_that("add_branch_condition() stops double conditioning.", {
   expect_error(
     add_branch_condition(mv, cond_illegal),
     "Option x is already conditioned."
+  )
+})
+
+test_that("add_branch_condition() works with named branch options.", {
+  z <- mutate_branch(x = x, y, name = "z")
+  w <- mutate_branch(x + y, subtract = x - y, name = "w")
+  cond <- branch_condition(x, x - y)
+  mv <- mverse(mydf) %>%
+    add_mutate_branch(z, w) %>%
+    add_branch_condition(cond)
+  expect_match(
+    attr(mv, "branches_conditioned_list")[[1]]$conds["x"], "subtract"
   )
 })

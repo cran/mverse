@@ -2,12 +2,9 @@
 % Please edit documentation in R/formula_branch.R
 \name{add_formula_branch}
 \alias{add_formula_branch}
-\alias{add_formula_branch.mverse}
 \title{Add formula branches to a \code{mverse} object.}
 \usage{
 add_formula_branch(.mverse, ...)
-
-\method{add_formula_branch}{mverse}(.mverse, ...)
 }
 \arguments{
 \item{.mverse}{a \code{mverse} object.}
@@ -25,9 +22,9 @@ are used to specify model structure options for the analysis.
 \examples{
 # Define a formula branch.
 model_specifications <- formula_branch(
-  y ~ femininity,
-  y ~ femininity + hurricane_strength,
-  y ~ femininity * hurricane_strength
+  y ~ MasFem,
+  y ~ MasFem + hurricane_strength,
+  y ~ MasFem * hurricane_strength
 )
 # Create a mverse, add the branch.
 mv <- create_multiverse(hurricane) \%>\%
@@ -35,6 +32,6 @@ mv <- create_multiverse(hurricane) \%>\%
 }
 \seealso{
 Other formula branch functions: 
-\code{\link{formula_branch}()}
+\code{\link{formula_branch}}
 }
 \concept{formula branch functions}

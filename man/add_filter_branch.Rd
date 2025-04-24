@@ -2,12 +2,9 @@
 % Please edit documentation in R/filter_branch.R
 \name{add_filter_branch}
 \alias{add_filter_branch}
-\alias{add_filter_branch.mverse}
 \title{Add filter branches to a \code{mverse} object.}
 \usage{
 add_filter_branch(.mverse, ...)
-
-\method{add_filter_branch}{mverse}(.mverse, ...)
 }
 \arguments{
 \item{.mverse}{a \code{mverse} object.}
@@ -37,6 +34,6 @@ mv <- create_multiverse(hurricane) \%>\%
 }
 \seealso{
 Other filter branch functions: 
-\code{\link{filter_branch}()}
+\code{\link{filter_branch}}
 }
 \concept{filter branch functions}

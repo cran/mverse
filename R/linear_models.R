@@ -21,8 +21,8 @@
 #'   TRUE # include all
 #' )
 #' model_specifications <- formula_branch(
-#'   y ~ femininity,
-#'   y ~ femininity + hurricane_strength
+#'   y ~ MasFem,
+#'   y ~ MasFem + hurricane_strength
 #' )
 #' mv <- create_multiverse(hurricane) %>%
 #'   add_filter_branch(hurricane_outliers) %>%
@@ -37,8 +37,6 @@
 #' @export
 lm_mverse <- function(.mverse) {
   stopifnot(inherits(.mverse, "mverse"))
-  formulae <- NULL
-  data <- NULL # suppress R CMD Check Note
   # check whether there is a formula branch (should be only 1)
   brs <- c(
     attr(.mverse, "branches_conditioned_list"), attr(.mverse, "branches_list")
@@ -50,7 +48,13 @@ lm_mverse <- function(.mverse) {
     stop("Exactly one formula branch is required.")
   }
   # fit lm
-  multiverse::inside(.mverse, model <- stats::lm(formulae, data = data))
+  multiverse::inside(
+    .mverse,
+    .model_mverse <- stats::lm(
+      stats::formula(.formula_mverse),
+      data = .data_mverse
+    )
+  )
   attr(.mverse, "class") <- unique(c("lm_mverse", class(.mverse)))
   execute_multiverse(.mverse)
   invisible(.mverse)
@@ -82,8 +86,8 @@ lm_mverse <- function(.mverse) {
 #'   TRUE # include all
 #' )
 #' model_specifications <- formula_branch(
-#'   alldeaths ~ femininity,
-#'   alldeaths ~ femininity + hurricane_strength
+#'   alldeaths ~ MasFem,
+#'   alldeaths ~ MasFem + hurricane_strength
 #' )
 #' model_distributions <- family_branch(poisson)
 #' mv <- create_multiverse(hurricane) %>%
@@ -100,9 +104,6 @@ lm_mverse <- function(.mverse) {
 #' @export
 glm_mverse <- function(.mverse) {
   stopifnot(inherits(.mverse, "mverse"))
-  formulae <- NULL
-  data <- NULL
-  family <- NULL # suppress R CMD Check Note
   # check whether there is a formula branch (should be only 1)
   brs <- c(
     attr(.mverse, "branches_conditioned_list"), attr(.mverse, "branches_list")
@@ -115,7 +116,11 @@ glm_mverse <- function(.mverse) {
   }
   # fit glm
   multiverse::inside(
-    .mverse, model <- stats::glm(formulae, data = data, family = family)
+    .mverse,
+    .model_mverse <- stats::glm(
+      stats::formula(.formula_mverse),
+      data = .data_mverse, family = .family_mverse
+    )
   )
   attr(.mverse, "class") <- unique(c("glm_mverse", class(.mverse)))
   execute_multiverse(.mverse)
@@ -131,26 +136,17 @@ glm_mverse <- function(.mverse) {
 #'
 #' @examples
 #' \donttest{
-#'
-#' # Fitting \code{glm.nb} models across a multiverse.
-#' hurricane_strength <- mutate_branch(
-#'   NDAM,
-#'   HighestWindSpeed,
-#'   Minpressure_Updated_2014
-#' )
+#' # Displaying the multiverse table with \code{glm.nb} models fitted.
 #' hurricane_outliers <- filter_branch(
 #'   !Name %in% c("Katrina", "Audrey", "Andrew"),
 #'   TRUE # include all
 #' )
-#' model_specifications <- formula_branch(
-#'   alldeaths ~ femininity,
-#'   alldeaths ~ femininity + hurricane_strength
-#' )
+#' model_specifications <- formula_branch(alldeaths ~ MasFem)
 #' mv <- create_multiverse(hurricane) %>%
 #'   add_filter_branch(hurricane_outliers) %>%
-#'   add_mutate_branch(hurricane_strength) %>%
 #'   add_formula_branch(model_specifications) %>%
 #'   glm.nb_mverse()
+#' summary(mv)
 #' }
 #' @param .mverse a \code{mverse} object.
 #' @return A \code{mverse} object with \code{glm.nb} fitted.
@@ -159,10 +155,11 @@ glm_mverse <- function(.mverse) {
 #' @export
 glm.nb_mverse <- function(.mverse) {
   stopifnot(inherits(.mverse, "mverse"))
-  formulae <- NULL
-  data <- NULL # suppress R CMD Check Note
   # check whether there is a formula branch (should be only 1)
-  brs <- c(attr(.mverse, "branches_conditioned_list"), attr(.mverse, "branches_list"))
+  brs <- c(
+    attr(.mverse, "branches_conditioned_list"),
+    attr(.mverse, "branches_list")
+  )
   if (length(brs) == 0) {
     stop("Exactly one formula branch is required.")
   }
@@ -171,7 +168,11 @@ glm.nb_mverse <- function(.mverse) {
   }
   # fit glm
   multiverse::inside(
-    .mverse, model <- MASS::glm.nb(formulae, data = data)
+    .mverse,
+    .model_mverse <- MASS::glm.nb(
+      stats::formula(.formula_mverse),
+      data = .data_mverse
+    )
   )
   attr(.mverse, "class") <- unique(c("glm.nb_mverse", class(.mverse)))
   execute_multiverse(.mverse)

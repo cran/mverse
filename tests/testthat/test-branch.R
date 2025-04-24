@@ -1,5 +1,3 @@
-context("Branch Definition")
-
 test_that("Branches require at least one rule.", {
   expect_error(
     mutate_branch(),
@@ -61,53 +59,91 @@ test_that("*_brach() defines branches with multiple options.", {
   expect_equal(length(fbranch$opts), 3)
 })
 
-context("Branch Naming and Parsing")
-
 test_that("name() extracts the name of a branch.", {
   mbranch <- mutate_branch(x + y, x - y, x * y, name = "mutate")
-  expect_equal(name(mbranch), "mutate")
+  expect_equal(mverse:::name.branch(mbranch), "mutate")
   fbranch <- filter_branch(x > 0, x < 0, x == 0, name = "filter")
-  expect_equal(name(fbranch), "filter")
+  expect_equal(mverse:::name.branch(fbranch), "filter")
   frmbranch <- formula_branch(y ~ x, y ~ log(x), name = "formula")
-  expect_equal(name(frmbranch), "formula")
+  expect_equal(mverse:::name.branch(frmbranch), "formula")
   fambranch <- family_branch(poisson, gaussian(link = "log"), name = "family")
-  expect_equal(name(fambranch), "family")
+  expect_equal(mverse:::name.branch(fambranch), "family")
 })
 
 test_that("name() renames a branch.", {
   mbranch <- mutate_branch(x + y, x - y, x * y, name = "mutate")
-  mbranch <- name(mbranch, "mrename")
-  expect_equal(name(mbranch), "mrename")
+  mbranch <- mverse:::name.branch(mbranch, "mrename")
+  expect_equal(mverse:::name.branch(mbranch), "mrename")
   fbranch <- filter_branch(x > 0, x < 0, x == 0, name = "filter")
-  fbranch <- name(fbranch, "frename")
-  expect_equal(name(fbranch), "frename")
+  fbranch <- mverse:::name.branch(fbranch, "frename")
+  expect_equal(mverse:::name.branch(fbranch), "frename")
 })
 
-test_that("parse() creates a branching command for multiverse.", {
+test_that("*_branch() creates a branching command for multiverse.", {
   mbranch <- mutate_branch(x + y, x - y, x * y, name = "m")
-  expect_equal(parse(mbranch), rlang::parse_expr(
-    'branch(m_branch, "m_1" ~ x + y, "m_2" ~ x - y, "m_3" ~ x * y)'
-  ))
+  expect_equal(
+    mverse:::parse.branch(mbranch),
+    rlang::parse_expr(
+      'branch(m_branch, "m_1" ~ x + y, "m_2" ~ x - y, "m_3" ~ x * y)'
+    )
+  )
   fbranch <- filter_branch(x > 0, x < 0, x == 0, name = "f")
-  expect_equal(parse(fbranch), rlang::parse_expr(
-    'branch(f_branch, "f_1" ~ x > 0, "f_2" ~ x < 0, "f_3" ~ x == 0)'
-  ))
+  expect_equal(
+    mverse:::parse.branch(fbranch),
+    rlang::parse_expr(
+      'branch(f_branch, "f_1" ~ x > 0, "f_2" ~ x < 0, "f_3" ~ x == 0)'
+    )
+  )
+})
+
+test_that("parse() handles named branched options", {
+  mbranch <- mutate_branch(
+    add = x + y, subtract = x - y, multiply = x * y, name = "m"
+  )
+  expect_equal(
+    mverse:::parse.branch(mbranch),
+    rlang::parse_expr(
+      'branch(m_branch, "add" ~ x + y, "subtract" ~ x - y, "multiply" ~ x * y)'
+    )
+  )
+  fbranch <- filter_branch(x > 0, x < 0, equals = x == 0, name = "filter")
+  expect_equal(
+    mverse:::parse.branch(fbranch),
+    rlang::parse_expr(
+      paste0('branch(filter_branch, "filter_1" ~ x > 0, ',
+             '"filter_2" ~ x < 0, "equals" ~ x == 0)')
+    )
+  )
+  frml <- formula_branch(linear = x ~ y, x ~ z, name = "model")
+  expect_equal(
+    mverse:::parse.branch(frml),
+    rlang::parse_expr(
+      'branch(model_branch, "linear" ~ x ~ y, "model_2" ~ x ~ z)'
+    )
+  )
+  fmly <- family_branch(linear = gaussian, name = "fam")
+  expect_equal(
+    mverse:::parse.branch(fmly),
+    rlang::parse_expr(
+      'branch(fam_branch, "linear" ~ gaussian)'
+    )
+  )
 })
 
 test_that("parse() handles long branch options.", {
   mydf <- data.frame(col1 = c(1, 2, 3))
   mbranch <- mutate_branch(
-    dplyr::if_else(col1 > 1, "a", dplyr::if_else(col1 == 1, "b", "c"))
+    ifelse(col1 > 1, "a", ifelse(col1 == 1, "b", "c"))
   )
   mv <- mverse(mydf) %>%
-    add_mutate_branch(mbranch)
-  execute_multiverse(mv)
-  multiverse::code(mv)[[3]]
+    add_mutate_branch(mbranch) %>%
+    execute_multiverse()
+  parsed_branches <- sapply(attr(mv, "branches_list"), mverse:::parse.branch)
   expect_true(any(
-    stringr::str_detect(
-      sapply(multiverse::code(mv), as.character),
-      "dplyr::if_else\\(col1 > 1,"
-    )
+    grepl("mbranch_1", parsed_branches)
+  ))
+  expect_true(any(
+    grepl("ifelse\\(col1 > 1", parsed_branches)
   ))
   fbranch <- formula_branch(
     cbind(col1, col2 - col1) ~ col3 + col3^2 + col3^3 +
@@ -115,16 +151,16 @@ test_that("parse() handles long branch options.", {
     cbind(col1, col2 - col1) ~ col3 + col3^2 + col3^3 +
       col3^4 + exp(col3) + exp(col3^2)
   )
-  add_formula_branch(mv, fbranch)
+  add_formula_branch(mv, fbranch) |>
+    execute_multiverse()
+  parsed_branches <- sapply(attr(mv, "branches_list"), mverse:::parse.branch)
   expect_true(any(
-    stringr::str_detect(
-      sapply(multiverse::code(mv), as.character),
-      "cbind\\(col1, col2 - col1\\)"
-    )
+    grepl("fbranch_2", parsed_branches)
+  ))
+  expect_true(any(
+    grepl("cbind\\(col1, col2 - col1", parsed_branches)
   ))
 })
-
-context("Branch Add and Remove")
 
 test_that("add_*_branch() adds a branch.", {
   mydf <- data.frame(
@@ -179,3 +215,32 @@ test_that("add_*_branch() checks for a new variable name.", {
     "Please specify a variable name for the branch rule:.*"
   )
 })
+
+test_that(
+  "formula_branch() with covariates option creates covariate branches linked
+  with the formula branch.", {
+    mydf <- data.frame(
+      x = c(1, 2, 3),
+      y = c(4, 5, 6),
+      w = c(7, 8, 9),
+      z = c(10, 11, 12)
+    )
+    mv <- create_multiverse(mydf)
+    frml <- formula_branch(y ~ x, y ~ log(x),
+                           covariates = c("z", "w"))
+    expect_equal(frml$covariates, c("z", "w"))
+    frml <- formula_branch(y ~ x,
+                           covariates = c("z", "w"),
+                           name = "f")
+    expect_equal(frml$covariates, c("z", "w"))
+    add_formula_branch(mv, frml)
+    branch_names <- names(multiverse::parameters(mv))
+    expect_true(any(grepl("covariate_z_branch", branch_names)))
+    expect_true(any(grepl("covariate_w_branch", branch_names)))
+    expect_equal(nrow(summary(mv)), 4)
+    expect_contains(summary(mv)[["covariate_z_branch"]],
+                    c("include_z", "exclude_z"))
+    expect_contains(summary(mv)[["covariate_w_branch"]],
+                    c("include_w", "exclude_w"))
+  }
+)
