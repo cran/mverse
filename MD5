@@ -1,6 +1,6 @@
-d832e13fa86ad9fd8347885c9a09df1a *DESCRIPTION
+30e39cc37fffef4c579357890bbf08f3 *DESCRIPTION
 6a07b5165f9e3479614cf5c63947e772 *NAMESPACE
-941dca7e446818ef88a081b2f2eaf3f2 *NEWS.md
+39ef631d709ffdbeb30f8f9a4a5ea122 *NEWS.md
 c582f31ec4727efe6104dd8e3f768f41 *R/branch.R
 489aa89868055eb155769bd9da1a793f *R/condition.R
 2360d91fcf3750f893622e250b209c57 *R/extract.R
@@ -16,11 +16,11 @@ b0474a83aeb65ef7a292c08478c8f216 *R/mverse.R
 e7a1d69987ba14248d3cf38a8ed1d22c *R/soccer.R
 e5d143d9c343473c1a318c6b363dd1e9 *R/spec_curve.R
 e40b415195b12b2698eb0b940f0555d9 *R/variables.R
-fccc05e871a17e0cc41e646a63962dcb *build/partial.rdb
+b95610ac598964e23a2b00a2f99309a9 *build/partial.rdb
 72ffc020ff3fcb4f90d008720c266d63 *build/vignette.rds
 c64ed049ddd322fe2650bd4f4cd1d79d *data/hurricane.rda
 581610f4f728a6887619d4a517b41239 *data/soccer.rda
-6743298c5eef01cf31cf64a19d514f2b *inst/CITATION
+4ed3e6322477bd0125fad421a09e0586 *inst/CITATION
 e3a9e1f14dd25e53c6e7823df7a0c283 *inst/REFERENCES.bib
 501d52613356228d6bf70068507c3415 *inst/WORDLIST
 a76e93e72b792994c933777d2813d27c *inst/doc/mverse_gettingstarted.R
@@ -75,7 +75,7 @@ b25dafea76757f7d4558a536e63f944d *tests/testthat/test-branch.R
 b522151ff34a6ad41f5e01f9d855ebed *tests/testthat/test-condition.R
 fdd24f3855a99f324cb5592af378c1b4 *tests/testthat/test-extract.R
 3c9548db2ab66e413fcb29037d6b1576 *tests/testthat/test-hypothesis_tests.R
-85ba7d0659d725f153e06db2861d6641 *tests/testthat/test-inspect.R
+9e11c803aba1c7d35269d135aff4b6be *tests/testthat/test-inspect.R
 ded74ad88b57b15c1880d6f21e01ee13 *tests/testthat/test-linear_models.R
 6e14c0f347f2124be0e2775219d5e396 *tests/testthat/test-mverse.R
 194c88dd8e0596a60624eec0da043bc0 *tests/testthat/test-spec_curve.R

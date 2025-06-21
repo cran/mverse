@@ -1,3 +1,10 @@
+# mverse 0.2.2
+
+## Minor patch
+
++  Updated unit tests to prevent failing due to differences <10-8 in numerical 
+estimates.
+
 # mverse 0.2.1
 
 ## Minor patches
